@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagram_flutter/resources/auth_methods.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_field_input.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -60,9 +64,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 24),
 
-              // button login
+              // button SignIn
               InkWell(
-                onTap: () {},
+                onTap: _isLoading ? null : () => _signIn(),
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.center,
@@ -75,7 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  child: const Text('Log In'),
+                  child: !_isLoading
+                      ? const Text('Sign In')
+                      : const Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -84,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Container(),
               ),
 
-              // transitioning to signing up
+              // transitioning to signing in
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -94,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(width: 8),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () => {},
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: const Text(
@@ -112,5 +122,24 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void _signIn() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final res = await AuthMethods().signIn(
+        email: _emailController.text, password: _passwordController.text);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (res != 'Success' && context.mounted) {
+      showSnackBar(context, res);
+    } else {
+      //
+    }
   }
 }

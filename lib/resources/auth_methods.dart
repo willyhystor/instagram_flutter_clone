@@ -70,4 +70,33 @@ class AuthMethods {
 
     return res;
   }
+
+  Future<String> signIn({
+    required String email,
+    required String password,
+  }) async {
+    String res = '';
+
+    try {
+      if (email.isNotEmpty && password.isNotEmpty) {
+        await _firebaseAuth.signInWithEmailAndPassword(
+            email: email, password: password);
+
+        res = 'Success';
+      } else {
+        res = 'Please enter all the fields';
+      }
+    }
+    // you can do it like this for specific firebase auth exception
+    // on FirebaseAuthException catch(e){
+    //   if(e.code == 'wrong-password'){
+    //     // do something
+    //   }
+    // }
+    catch (e) {
+      res = e.toString();
+    }
+
+    return res;
+  }
 }
