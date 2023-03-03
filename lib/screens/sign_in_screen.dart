@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_flutter/resources/auth_methods.dart';
+import 'package:instagram_flutter/responsive/mobile_screen_layout.dart';
+import 'package:instagram_flutter/responsive/responsive_layout.dart';
+import 'package:instagram_flutter/responsive/web_screen_layout.dart';
+import 'package:instagram_flutter/screens/home_screen.dart';
+import 'package:instagram_flutter/screens/sign_up_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_field_input.dart';
@@ -33,13 +38,14 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: ListView(
+            // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                flex: 2,
-                child: Container(),
-              ),
+              // Expanded(
+              //   flex: 2,
+              //   child: Container(),
+              // ),
+              const SizedBox(height: 64),
 
               // svg image
               SvgPicture.asset(
@@ -54,6 +60,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 hintText: 'Enter your E-mail',
                 textInputType: TextInputType.emailAddress,
               ),
+              const SizedBox(height: 24),
 
               // text input for password
               TextFieldInput(
@@ -89,10 +96,10 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              Expanded(
-                flex: 2,
-                child: Container(),
-              ),
+              // Expanded(
+              //   flex: 2,
+              //   child: Container(),
+              // ),
 
               // transitioning to signing in
               Row(
@@ -104,7 +111,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   const SizedBox(width: 8),
                   GestureDetector(
-                    onTap: () => {},
+                    onTap: () => _signUp(),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: const Text(
@@ -139,7 +146,24 @@ class _SignInScreenState extends State<SignInScreen> {
     if (res != 'Success' && context.mounted) {
       showSnackBar(context, res);
     } else {
-      //
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+            webScreenLayout: WebScreenLayout(),
+            mobileScreenLayout: MobileScreenLayout(),
+          ),
+        ),
+      );
     }
+  }
+
+  void _signUp() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignUpScreen(),
+      ),
+    );
   }
 }

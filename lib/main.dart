@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/responsive/mobile_screen_layout.dart';
+import 'package:instagram_flutter/responsive/responsive_layout.dart';
+import 'package:instagram_flutter/responsive/web_screen_layout.dart';
 import 'package:instagram_flutter/screens/sign_in_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 
@@ -39,7 +43,33 @@ class MyApp extends StatelessWidget {
       //   webScreenLayout: WebScreenLayout(),
       //   mobileScreenLayout: MobileScreenLayout(),
       // ),
-      home: SignInScreen(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.hasData) {
+              return const ResponsiveLayout(
+                webScreenLayout: WebScreenLayout(),
+                mobileScreenLayout: MobileScreenLayout(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  snapshot.error.toString(),
+                ),
+              );
+            }
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: primaryColor,
+              ),
+            );
+          }
+
+          return const SignInScreen();
+        },
+      ),
     );
   }
 }

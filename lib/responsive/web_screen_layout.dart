@@ -5,11 +5,13 @@ class WebScreenLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Text(
-        'This is Web',
-        style: TextStyle(
-          color: Colors.green,
+    return const Scaffold(
+      body: Center(
+        child: Text(
+          'This is Web',
+          style: TextStyle(
+            color: Colors.green,
+          ),
         ),
       ),
     );

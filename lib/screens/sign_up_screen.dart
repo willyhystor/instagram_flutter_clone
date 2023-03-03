@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_flutter/resources/auth_methods.dart';
+import 'package:instagram_flutter/responsive/mobile_screen_layout.dart';
+import 'package:instagram_flutter/responsive/responsive_layout.dart';
+import 'package:instagram_flutter/responsive/web_screen_layout.dart';
+import 'package:instagram_flutter/screens/sign_in_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_field_input.dart';
@@ -156,15 +160,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: const Text('Don\'t have an account?'),
+                      child: const Text('Already have an account?'),
                     ),
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () => _signIn(),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: const Text(
-                          'Sign Up.',
+                          'Sign In.',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -198,12 +202,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _isLoading = false;
     });
 
-    log(res);
-
     if (res != 'success' && context.mounted) {
       showSnackBar(context, res);
     } else {
-      //
+      _toHome();
     }
   }
 
@@ -215,5 +217,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _imageFile = image;
       });
     }
+  }
+
+  void _signIn() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignInScreen(),
+      ),
+    );
+  }
+
+  void _toHome() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ResponsiveLayout(
+          webScreenLayout: WebScreenLayout(),
+          mobileScreenLayout: MobileScreenLayout(),
+        ),
+      ),
+    );
   }
 }
