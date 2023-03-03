@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/models/account.dart';
+import 'package:instagram_flutter/providers/account_provider.dart';
 import 'package:instagram_flutter/utils/dimensions.dart';
+import 'package:provider/provider.dart';
 
-class ResponsiveLayout extends StatelessWidget {
+class ResponsiveLayout extends StatefulWidget {
   final Widget webScreenLayout;
   final Widget mobileScreenLayout;
 
@@ -12,14 +15,30 @@ class ResponsiveLayout extends StatelessWidget {
   });
 
   @override
+  State<ResponsiveLayout> createState() => _ResponsiveLayoutState();
+}
+
+class _ResponsiveLayoutState extends State<ResponsiveLayout> {
+  @override
+  void initState() {
+    super.initState();
+
+    _refreshAccount();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (p0, p1) {
         if (p1.maxWidth > webScreenSize) {
-          return webScreenLayout;
+          return widget.webScreenLayout;
         }
-        return mobileScreenLayout;
+        return widget.mobileScreenLayout;
       },
     );
+  }
+
+  void _refreshAccount() async {
+    await Provider.of<AccountProvider>(context, listen: false).refreshAccount();
   }
 }

@@ -103,4 +103,15 @@ class AuthMethods {
 
     return res;
   }
+
+  Future<Account> getAccountDetail() async {
+    User user = _firebaseAuth.currentUser!;
+
+    DocumentSnapshot snapshot = await _firebaseFirestore
+        .collection(Account.keyCollection)
+        .doc(user.uid)
+        .get();
+
+    return Account.fromSnap(snapshot);
+  }
 }
