@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instagram_flutter/resources/storage_methods.dart';
 
+import '../models/account.dart';
+
 class AuthMethods {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -34,24 +36,26 @@ class AuthMethods {
         String profilePictureUrl = '';
         if (imageFile != null) {
           profilePictureUrl = await StorageMethods().uploadImage(
-            childName: 'profile_picture',
+            childName: 'profile_pictures',
             file: imageFile,
           );
         }
 
+        final account = Account(
+          uid: userCredential.user!.uid,
+          email: email,
+          username: username,
+          bio: bio,
+          followers: [],
+          following: [],
+          profilePictureUrl: profilePictureUrl,
+        );
+
         // add user to db
         _firebaseFirestore
-            .collection('users')
+            .collection('accounts')
             .doc(userCredential.user!.uid)
-            .set({
-          'uid': userCredential.user!.uid,
-          'email': email,
-          'username': username,
-          'bio': bio,
-          'followers': [],
-          'following': [],
-          'profile_picture_url': profilePictureUrl,
-        });
+            .set(account.toJson());
         // another version to add user to db
         // _firebaseFirestore.collection('users').add({
         //   'uid': userCredential.user!.uid,
