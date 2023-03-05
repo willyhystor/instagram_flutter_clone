@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter/providers/account_provider.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/utils/global_variables.dart';
 import 'package:provider/provider.dart';
 
 class MobileScreenLayout extends StatefulWidget {
@@ -44,13 +45,8 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        children: [
-          Icon(Icons.home),
-          Icon(Icons.search),
-          Icon(Icons.add_circle),
-          Icon(Icons.favorite),
-          Icon(Icons.person),
-        ],
+        physics: const NeverScrollableScrollPhysics(),
+        children: homeScreenItems,
       ),
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: mobileBackgroundColor,
@@ -58,26 +54,21 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         inactiveColor: secondaryColor,
         currentIndex: _currentIndex,
         onTap: _navigateTo,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle),
-            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
-            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: '',
           ),
         ],
       ),
