@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/models/account.dart';
+import 'package:instagram_flutter/models/post.dart';
 import 'package:instagram_flutter/providers/account_provider.dart';
+import 'package:instagram_flutter/resources/firestore_methods.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
@@ -36,7 +39,7 @@ class _PostCardState extends State<PostCard> {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(widget.snap['prof_image']),
+                  backgroundImage: NetworkImage(widget.snap[Post.keyProfImage]),
                 ),
                 Expanded(
                   child: Padding(
@@ -46,7 +49,7 @@ class _PostCardState extends State<PostCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.snap['username'],
+                          widget.snap[Post.keyUsername],
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -65,11 +68,7 @@ class _PostCardState extends State<PostCard> {
 
           // Image
           GestureDetector(
-            onDoubleTap: () {
-              setState(() {
-                _isLikeAnimating = true;
-              });
-            },
+            onDoubleTap: () => _onDoubleTapPost(account!),
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -77,7 +76,7 @@ class _PostCardState extends State<PostCard> {
                   height: MediaQuery.of(context).size.height * 0.35,
                   width: double.infinity,
                   child: Image.network(
-                    widget.snap['post_url'],
+                    widget.snap[Post.keyPostUrl],
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -107,13 +106,19 @@ class _PostCardState extends State<PostCard> {
           Row(
             children: [
               LikeAnimation(
-                isAnimating: widget.snap['likes'].contains(account!.uid),
+                isAnimating: widget.snap[Post.keyLikes].contains(account!.uid),
                 smalllike: true,
                 duration: const Duration(milliseconds: 400),
                 child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.favorite),
-                  color: Colors.red,
+                  onPressed: () => _onTapLikeIcon(account),
+                  icon: widget.snap[Post.keyLikes].contains(account.uid)
+                      ? const Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                        )
+                      : const Icon(
+                          Icons.favorite_border,
+                        ),
                 ),
               ),
               IconButton(
@@ -149,7 +154,7 @@ class _PostCardState extends State<PostCard> {
                       .subtitle2!
                       .copyWith(fontWeight: FontWeight.w800),
                   child: Text(
-                    '${widget.snap['likes'].length} likes',
+                    '${widget.snap[Post.keyLikes].length} likes',
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
                 ),
@@ -161,11 +166,11 @@ class _PostCardState extends State<PostCard> {
                       style: const TextStyle(color: primaryColor),
                       children: [
                         TextSpan(
-                          text: widget.snap['username'],
+                          text: widget.snap[Post.keyUsername],
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: ' ${widget.snap['caption']}',
+                          text: ' ${widget.snap[Post.keyCaption]}',
                         ),
                       ],
                     ),
@@ -188,7 +193,7 @@ class _PostCardState extends State<PostCard> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
                     DateFormat.yMMMd()
-                        .format(widget.snap['date_published'].toDate()),
+                        .format(widget.snap[Post.keyDatePublished].toDate()),
                     style: const TextStyle(
                       fontSize: 16,
                       color: secondaryColor,
@@ -226,6 +231,28 @@ class _PostCardState extends State<PostCard> {
           ),
         );
       },
+    );
+  }
+
+  void _onDoubleTapPost(Account account) async {
+    if (!widget.snap[Post.keyLikes].contains(account.uid)) {
+      await FirestoreMethods().likePost(
+        widget.snap[Post.keyPostId],
+        account.uid,
+        widget.snap[Post.keyLikes],
+      );
+    }
+
+    setState(() {
+      _isLikeAnimating = true;
+    });
+  }
+
+  void _onTapLikeIcon(Account account) async {
+    await FirestoreMethods().likePost(
+      widget.snap[Post.keyPostId],
+      account.uid,
+      widget.snap[Post.keyLikes],
     );
   }
 }
