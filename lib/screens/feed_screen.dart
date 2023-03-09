@@ -21,6 +21,7 @@ class _FeedScreenState extends State<FeedScreen> {
         centerTitle: false,
         title: SvgPicture.asset(
           'assets/ic_instagram.svg',
+          // ignore: deprecated_member_use
           color: primaryColor,
           height: 32,
         ),
@@ -47,7 +48,7 @@ class _FeedScreenState extends State<FeedScreen> {
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
               return PostCard(
-                snap: snapshot.data!.docs[index].data(),
+                postSnap: snapshot.data!.docs[index].data(),
               );
             },
           );

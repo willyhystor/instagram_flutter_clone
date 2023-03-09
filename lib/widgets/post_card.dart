@@ -10,11 +10,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {
-  final Map snap;
+  final Map postSnap;
 
   const PostCard({
     super.key,
-    required this.snap,
+    required this.postSnap,
   });
 
   @override
@@ -40,7 +40,8 @@ class _PostCardState extends State<PostCard> {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(widget.snap[Post.keyProfImage]),
+                  backgroundImage:
+                      NetworkImage(widget.postSnap[Post.keyProfImage]),
                 ),
                 Expanded(
                   child: Padding(
@@ -50,7 +51,7 @@ class _PostCardState extends State<PostCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.snap[Post.keyUsername],
+                          widget.postSnap[Post.keyUsername],
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -77,7 +78,7 @@ class _PostCardState extends State<PostCard> {
                   height: MediaQuery.of(context).size.height * 0.35,
                   width: double.infinity,
                   child: Image.network(
-                    widget.snap[Post.keyPostUrl],
+                    widget.postSnap[Post.keyPostUrl],
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -107,12 +108,13 @@ class _PostCardState extends State<PostCard> {
           Row(
             children: [
               LikeAnimation(
-                isAnimating: widget.snap[Post.keyLikes].contains(account!.uid),
+                isAnimating:
+                    widget.postSnap[Post.keyLikes].contains(account!.uid),
                 smalllike: true,
                 duration: const Duration(milliseconds: 400),
                 child: IconButton(
                   onPressed: () => _onTapLikeIcon(account),
-                  icon: widget.snap[Post.keyLikes].contains(account.uid)
+                  icon: widget.postSnap[Post.keyLikes].contains(account.uid)
                       ? const Icon(
                           Icons.favorite,
                           color: Colors.red,
@@ -126,7 +128,9 @@ class _PostCardState extends State<PostCard> {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const CommentScreen(),
+                    builder: (context) => CommentScreen(
+                      postSnap: widget.postSnap,
+                    ),
                   ),
                 ),
                 icon: const Icon(Icons.comment_outlined),
@@ -157,11 +161,11 @@ class _PostCardState extends State<PostCard> {
                 DefaultTextStyle(
                   style: Theme.of(context)
                       .textTheme
-                      .subtitle2!
+                      .titleSmall!
                       .copyWith(fontWeight: FontWeight.w800),
                   child: Text(
-                    '${widget.snap[Post.keyLikes].length} likes',
-                    style: Theme.of(context).textTheme.bodyText2,
+                    '${widget.postSnap[Post.keyLikes].length} likes',
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 Container(
@@ -172,11 +176,11 @@ class _PostCardState extends State<PostCard> {
                       style: const TextStyle(color: primaryColor),
                       children: [
                         TextSpan(
-                          text: widget.snap[Post.keyUsername],
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          text: widget.postSnap[Post.keyUsername],
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: ' ${widget.snap[Post.keyCaption]}',
+                          text: ' ${widget.postSnap[Post.keyCaption]}',
                         ),
                       ],
                     ),
@@ -186,9 +190,9 @@ class _PostCardState extends State<PostCard> {
                   onTap: () {},
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
+                    child: const Text(
                       'View all 200 comments',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         color: secondaryColor,
                       ),
@@ -198,8 +202,8 @@ class _PostCardState extends State<PostCard> {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
-                    DateFormat.yMMMd()
-                        .format(widget.snap[Post.keyDatePublished].toDate()),
+                    DateFormat.yMMMd().format(
+                        widget.postSnap[Post.keyDatePublished].toDate()),
                     style: const TextStyle(
                       fontSize: 16,
                       color: secondaryColor,
@@ -241,11 +245,11 @@ class _PostCardState extends State<PostCard> {
   }
 
   void _onDoubleTapPost(Account account) async {
-    if (!widget.snap[Post.keyLikes].contains(account.uid)) {
+    if (!widget.postSnap[Post.keyLikes].contains(account.uid)) {
       await FirestoreMethods().likePost(
-        widget.snap[Post.keyPostId],
+        widget.postSnap[Post.keyPostId],
         account.uid,
-        widget.snap[Post.keyLikes],
+        widget.postSnap[Post.keyLikes],
       );
     }
 
@@ -256,9 +260,9 @@ class _PostCardState extends State<PostCard> {
 
   void _onTapLikeIcon(Account account) async {
     await FirestoreMethods().likePost(
-      widget.snap[Post.keyPostId],
+      widget.postSnap[Post.keyPostId],
       account.uid,
-      widget.snap[Post.keyLikes],
+      widget.postSnap[Post.keyLikes],
     );
   }
 }

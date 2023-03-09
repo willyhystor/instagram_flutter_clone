@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagram_flutter/models/post.dart';
+import 'package:instagram_flutter/models/post_comment.dart';
 import 'package:instagram_flutter/resources/storage_methods.dart';
 import 'package:uuid/uuid.dart';
 
@@ -56,7 +57,39 @@ class FirestoreMethods {
         });
       }
     } catch (e) {
-      print(e.toString());
+      //
+    }
+  }
+
+  Future<String> postComment(
+    String postId,
+    String text,
+    String uid,
+    String username,
+    String? profilePic,
+  ) async {
+    try {
+      if (text.isNotEmpty) {
+        final comment = PostComment(
+          uid: const Uuid().v1(),
+          postId: postId,
+          username: username,
+          profImage: profilePic,
+          likes: [],
+          datePublished: DateTime.now(),
+        );
+
+        _firestore
+            .collection(Post.keyCollection)
+            .doc(postId)
+            .collection(PostComment.keyCollection)
+            .doc(comment.uid)
+            .set(comment.toJson());
+      }
+
+      return '';
+    } catch (e) {
+      return e.toString();
     }
   }
 }

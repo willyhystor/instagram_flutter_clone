@@ -4,7 +4,6 @@ import 'package:instagram_flutter/resources/auth_methods.dart';
 import 'package:instagram_flutter/responsive/mobile_screen_layout.dart';
 import 'package:instagram_flutter/responsive/responsive_layout.dart';
 import 'package:instagram_flutter/responsive/web_screen_layout.dart';
-import 'package:instagram_flutter/screens/home_screen.dart';
 import 'package:instagram_flutter/screens/sign_up_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/utils/utils.dart';
@@ -50,6 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
               // svg image
               SvgPicture.asset(
                 'assets/ic_instagram.svg',
+                // ignore: deprecated_member_use
                 color: primaryColor,
               ),
               const SizedBox(height: 64),

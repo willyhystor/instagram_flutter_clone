@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -59,6 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // svg image
                 SvgPicture.asset(
                   'assets/ic_instagram.svg',
+                  // ignore: deprecated_member_use
                   color: primaryColor,
                 ),
                 const SizedBox(height: 64),
