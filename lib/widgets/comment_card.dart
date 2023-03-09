@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/models/post_comment.dart';
+import 'package:intl/intl.dart';
 
 class CommentCard extends StatefulWidget {
-  const CommentCard({super.key});
+  final Map postCommentSnap;
+
+  const CommentCard({
+    super.key,
+    required this.postCommentSnap,
+  });
 
   @override
   State<CommentCard> createState() => _CommentCardState();
@@ -14,9 +21,9 @@ class _CommentCardState extends State<CommentCard> {
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       child: Row(
         children: [
-          const CircleAvatar(
-            backgroundImage: NetworkImage(
-                'https://images.unsplash.com/photo-1678085712043-e0ad33af4eab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80'),
+          CircleAvatar(
+            backgroundImage:
+                NetworkImage(widget.postCommentSnap[PostComment.keyProfImage]),
             radius: 18,
           ),
           Expanded(
@@ -27,23 +34,26 @@ class _CommentCardState extends State<CommentCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       children: [
                         TextSpan(
-                          text: 'username',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          text:
+                              '${widget.postCommentSnap[PostComment.keyUsername]} ',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: 'caption ip lorem ipsum',
+                          text: widget.postCommentSnap[PostComment.keyComment],
                         ),
                       ],
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      '12/12/21',
-                      style: TextStyle(
+                      DateFormat.yMMMd().format(widget
+                          .postCommentSnap[PostComment.keyDatePublished]
+                          .toDate()),
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),

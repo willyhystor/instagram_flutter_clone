@@ -63,17 +63,18 @@ class FirestoreMethods {
 
   Future<String> postComment(
     String postId,
-    String text,
+    String comment,
     String uid,
     String username,
     String? profilePic,
   ) async {
     try {
-      if (text.isNotEmpty) {
-        final comment = PostComment(
+      if (comment.isNotEmpty) {
+        final postComment = PostComment(
           uid: const Uuid().v1(),
           postId: postId,
           username: username,
+          comment: comment,
           profImage: profilePic,
           likes: [],
           datePublished: DateTime.now(),
@@ -83,8 +84,8 @@ class FirestoreMethods {
             .collection(Post.keyCollection)
             .doc(postId)
             .collection(PostComment.keyCollection)
-            .doc(comment.uid)
-            .set(comment.toJson());
+            .doc(postComment.uid)
+            .set(postComment.toJson());
       }
 
       return '';

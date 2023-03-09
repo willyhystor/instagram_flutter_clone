@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter/models/account.dart';
 import 'package:instagram_flutter/models/post.dart';
+import 'package:instagram_flutter/models/post_comment.dart';
 import 'package:instagram_flutter/providers/account_provider.dart';
 import 'package:instagram_flutter/resources/firestore_methods.dart';
 import 'package:instagram_flutter/screens/comment_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +26,14 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool _isLikeAnimating = false;
+  int postCommentLength = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _getComments();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,14 +136,7 @@ class _PostCardState extends State<PostCard> {
                 ),
               ),
               IconButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CommentScreen(
-                      postSnap: widget.postSnap,
-                    ),
-                  ),
-                ),
+                onPressed: () => _toCommentCard(),
                 icon: const Icon(Icons.comment_outlined),
               ),
               IconButton(
@@ -190,9 +194,9 @@ class _PostCardState extends State<PostCard> {
                   onTap: () {},
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: const Text(
-                      'View all 200 comments',
-                      style: TextStyle(
+                    child: Text(
+                      'View all $postCommentLength comments',
+                      style: const TextStyle(
                         fontSize: 16,
                         color: secondaryColor,
                       ),
@@ -264,5 +268,34 @@ class _PostCardState extends State<PostCard> {
       account.uid,
       widget.postSnap[Post.keyLikes],
     );
+  }
+
+  void _toCommentCard() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CommentScreen(
+          postSnap: widget.postSnap,
+        ),
+      ),
+    );
+
+    _getComments();
+  }
+
+  void _getComments() async {
+    try {
+      QuerySnapshot postCommentSnap = await FirebaseFirestore.instance
+          .collection(Post.keyCollection)
+          .doc(widget.postSnap[Post.keyPostId])
+          .collection(PostComment.keyCollection)
+          .get();
+
+      setState(() {
+        postCommentLength = postCommentSnap.docs.length;
+      });
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
   }
 }

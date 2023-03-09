@@ -5,6 +5,7 @@ class PostComment {
   static String keyUid = 'uid';
   static String keyUsername = 'username';
   static String keyPostId = 'post_id';
+  static String keyComment = 'comment';
   static String keyDatePublished = 'date_published';
   static String keyProfImage = 'prof_image';
   static String keyLikes = 'likes';
@@ -12,6 +13,7 @@ class PostComment {
   final String uid;
   final String username;
   final String postId;
+  final String comment;
   final DateTime datePublished;
   final String? profImage;
   final List likes;
@@ -20,6 +22,7 @@ class PostComment {
     required this.uid,
     required this.username,
     required this.postId,
+    required this.comment,
     required this.datePublished,
     this.profImage,
     this.likes = const [],
@@ -30,6 +33,7 @@ class PostComment {
       keyUid: uid,
       keyUsername: username,
       keyPostId: postId,
+      keyComment: comment,
       keyDatePublished: datePublished,
       keyProfImage: profImage,
       keyLikes: likes,
@@ -43,6 +47,7 @@ class PostComment {
       uid: map[keyUid],
       username: map[keyUsername],
       postId: map[keyPostId],
+      comment: map[keyComment],
       datePublished: map[keyDatePublished],
       profImage: map[keyProfImage],
       likes: map[keyLikes],

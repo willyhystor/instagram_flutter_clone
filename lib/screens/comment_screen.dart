@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/models/account.dart';
 import 'package:instagram_flutter/models/post.dart';
+import 'package:instagram_flutter/models/post_comment.dart';
 import 'package:instagram_flutter/providers/account_provider.dart';
 import 'package:instagram_flutter/resources/firestore_methods.dart';
 import 'package:instagram_flutter/utils/colors.dart';
@@ -44,7 +47,30 @@ class _CommentScreenState extends State<CommentScreen> {
         title: const Text('Comments'),
         centerTitle: false,
       ),
-      body: const CommentCard(),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection(Post.keyCollection)
+            .doc(widget.postSnap[Post.keyPostId])
+            .collection(PostComment.keyCollection)
+            .orderBy(PostComment.keyDatePublished, descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              return CommentCard(
+                postCommentSnap: snapshot.data!.docs[index].data(),
+              );
+            },
+          );
+        },
+      ),
       bottomNavigationBar: SafeArea(
         child: Container(
           height: kToolbarHeight,
@@ -71,15 +97,7 @@ class _CommentScreenState extends State<CommentScreen> {
                 ),
               ),
               InkWell(
-                onTap: () {
-                  FirestoreMethods().postComment(
-                    widget.postSnap[Post.keyPostId],
-                    _commentController.text,
-                    account.uid,
-                    account.username,
-                    account.profilePictureUrl,
-                  );
-                },
+                onTap: () => _postComment(account),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -96,5 +114,19 @@ class _CommentScreenState extends State<CommentScreen> {
         ),
       ),
     );
+  }
+
+  void _postComment(Account account) async {
+    FirestoreMethods().postComment(
+      widget.postSnap[Post.keyPostId],
+      _commentController.text,
+      account.uid,
+      account.username,
+      account.profilePictureUrl,
+    );
+
+    setState(() {
+      _commentController.text = '';
+    });
   }
 }
