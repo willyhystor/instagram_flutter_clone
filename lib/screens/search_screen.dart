@@ -5,6 +5,7 @@ import 'package:instagram_flutter/models/account.dart';
 import 'package:instagram_flutter/models/post.dart';
 import 'package:instagram_flutter/screens/profile_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/utils/global_variables.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -89,7 +90,27 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  List<QuiltedGridTile> mobileTile() {
+    return const [
+      QuiltedGridTile(2, 2),
+      QuiltedGridTile(1, 1),
+      QuiltedGridTile(1, 1),
+      QuiltedGridTile(1, 1),
+      QuiltedGridTile(1, 1),
+    ];
+  }
+
+  List<QuiltedGridTile> webTile() {
+    return const [
+      QuiltedGridTile(1, 1),
+      QuiltedGridTile(1, 1),
+      QuiltedGridTile(1, 1),
+    ];
+  }
+
   Widget _showPostsResult() {
+    final width = MediaQuery.of(context).size.width;
+
     return FutureBuilder(
       future: FirebaseFirestore.instance.collection(Post.keyCollection).get(),
       builder: (context, snapshot) {
@@ -101,17 +122,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
         return GridView.builder(
           gridDelegate: SliverQuiltedGridDelegate(
-            crossAxisCount: 4,
+            crossAxisCount: width > webScreenSize ? 3 : 4,
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
             repeatPattern: QuiltedGridRepeatPattern.inverted,
-            pattern: const [
-              QuiltedGridTile(2, 2),
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(1, 1),
-            ],
+            pattern: width > webScreenSize ? webTile() : mobileTile(),
           ),
           itemCount: snapshot.data!.docs.length,
           itemBuilder: (context, index) {
