@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter/models/account.dart';
 import 'package:instagram_flutter/models/post.dart';
+import 'package:instagram_flutter/resources/auth_methods.dart';
+import 'package:instagram_flutter/resources/firestore_methods.dart';
+import 'package:instagram_flutter/screens/sign_in_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/widgets/follow_button.dart';
 
@@ -101,6 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 FutureBuilder(
                   future: FirebaseFirestore.instance
                       .collection(Post.keyCollection)
+                      .where(Post.keyUid, isEqualTo: widget.uid)
                       .get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -207,10 +212,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           FollowButton(
-            function: () {},
+            function: () async {
+              await AuthMethods().signOut();
+
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SignInScreen(),
+                  ),
+                );
+              }
+            },
             backgroundColor: mobileBackgroundColor,
             borderColor: Colors.grey,
-            text: 'Edit Profile',
+            text: 'Sign Out',
             textColor: primaryColor,
           ),
         ],
@@ -222,7 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           FollowButton(
-            function: () {},
+            function: () => _followButtonAction(),
             backgroundColor: mobileBackgroundColor,
             borderColor: Colors.grey,
             text: 'Unfollow',
@@ -237,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           FollowButton(
-            function: () {},
+            function: () => _followButtonAction(),
             backgroundColor: blueColor,
             borderColor: blueColor,
             text: 'Follow',
@@ -248,5 +264,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Container();
+  }
+
+  void _followButtonAction() async {
+    await FirestoreMethods().followAccount(
+      FirebaseAuth.instance.currentUser!.uid,
+      _accountData[Account.keyUid],
+    );
+
+    getUserData();
   }
 }

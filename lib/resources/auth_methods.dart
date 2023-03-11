@@ -114,4 +114,8 @@ class AuthMethods {
 
     return Account.fromSnap(snapshot);
   }
+
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
 }

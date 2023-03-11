@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instagram_flutter/models/account.dart';
 import 'package:instagram_flutter/models/post.dart';
 import 'package:instagram_flutter/models/post_comment.dart';
 import 'package:instagram_flutter/resources/storage_methods.dart';
@@ -98,6 +99,40 @@ class FirestoreMethods {
   Future<void> deletePost(String postId) async {
     try {
       await _firestore.collection(Post.keyCollection).doc(postId).delete();
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<void> followAccount(String uid, String followId) async {
+    try {
+      final snap =
+          await _firestore.collection(Account.keyCollection).doc(uid).get();
+      final following = snap.data()!;
+
+      if (following.containsKey(followId)) {
+        await _firestore
+            .collection(Account.keyCollection)
+            .doc(followId)
+            .update({
+          Account.keyFollowers: FieldValue.arrayRemove([uid]),
+        });
+
+        await _firestore.collection(Account.keyCollection).doc(uid).update({
+          Account.keyFollowing: FieldValue.arrayRemove([followId]),
+        });
+      } else {
+        await _firestore
+            .collection(Account.keyCollection)
+            .doc(followId)
+            .update({
+          Account.keyFollowers: FieldValue.arrayUnion([uid]),
+        });
+
+        await _firestore.collection(Account.keyCollection).doc(uid).update({
+          Account.keyFollowing: FieldValue.arrayUnion([followId]),
+        });
+      }
     } catch (e) {
       log(e.toString());
     }
